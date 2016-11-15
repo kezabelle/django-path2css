@@ -2,6 +2,14 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 from functools import partial
+from django.utils.encoding import force_text
+from django.utils.functional import lazy
+from django.utils.safestring import mark_safe
+try:
+    from collections import UserList
+except ImportError:
+    from UserList import UserList
+from django.utils.six import python_2_unicode_compatible
 
 __version_info__ = '0.1.0'
 __version__ = '0.1.0'
@@ -38,3 +46,38 @@ def generate_css_names_from_string(item, split_on, prefix='', suffix='', midpoin
 
 request_path_to_css_names = partial(generate_css_names_from_string,
                                     split_on='/')
+
+
+
+@python_2_unicode_compatible
+class Output(UserList):
+    def __str__(self):
+        """
+        Used when doing something like:
+        {% path2css ... as OUTVAR %}
+        {{ OUTVAR }}
+        """
+        return mark_safe(" ".join(force_text(x) for x in self.data))
+
+    def __html__(self):
+        """
+        Used in {% path2css x y %} is used directly
+        """
+        return force_text(self)
+
+    def __getitem__(self, item):
+        """
+        Used when doing something like:
+        {% path2css ... as OUTVAR %}
+        {% for x in OUTVAR %}{{ x }}{% endfor %}
+        """
+        return mark_safe(super(Output, self).__getitem__(item))
+
+
+
+def context_processor(request):
+    def lazy_output():
+        return Output(request_path_to_css_names(request.path, midpoint='-'))
+    return {
+        "PATH2CSS": lazy(lazy_output, Output),
+    }

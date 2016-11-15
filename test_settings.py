@@ -44,6 +44,7 @@ SITE_ID = 1
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
+    'path2css.context_processor',
 )
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
