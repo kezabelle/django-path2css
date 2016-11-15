@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+import django
+import pytest
 from django.template import Context, Template as T
 
 CTX = Context()
@@ -41,10 +43,13 @@ def test_templatetag_with_suffix_ending_with_separator():
     assert resp == 'test_BYE'
 
 
+@pytest.mark.xfail(condition=django.VERSION[0:2] < (1, 9),
+                   reason="Django 1.8 doesn't have combination simple/assignment tags")
 def test_templatetag_assignment():
     resp = T('''{% load path2css %}{% path2css "/test/" as GOOSE %}
-    {% for part in GOOSE %}---{{part}}---{% endfor %}
+    1{% for part in GOOSE %}---{{part}}---{% endfor %}2
     ''').render(
         CTX,
     ).strip()
-    assert resp == '---test---'
+    parts = [x for x in resp.split() if x]
+    assert parts == ['1---test---2']
