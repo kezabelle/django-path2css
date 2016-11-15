@@ -15,7 +15,11 @@ def get_version():
 
 
 def generate_css_names_from_string(item, split_on, prefix='', suffix='', midpoint=''):
-    newpath = item.strip(split_on).split(split_on)
+    newpath = tuple(part for part in item.strip(split_on).split(split_on)
+                    if part)
+    # If the thing is empty, just return an empty tuple
+    if not newpath:
+        return ()
     newpath_length = len(newpath) + 1
     variations = (newpath[0:l] for l in range(1, newpath_length))
     # If there's a prefix and it doesn't end with a sensible separator (given
@@ -25,7 +29,6 @@ def generate_css_names_from_string(item, split_on, prefix='', suffix='', midpoin
     # same as prefix, but start, rather than end
     if suffix and not suffix.startswith(('-', '_')):
         suffix = '%s%s' % (midpoint, suffix,)
-
     finalised_variations = (
         '%s%s%s' % (prefix, midpoint.join(variation), suffix)
         for variation in variations
