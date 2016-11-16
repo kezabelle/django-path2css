@@ -3,4 +3,5 @@ Change history for django-path2css
 
 ?next?
 ^^^^^^
-* ...
+* First release - tests for the template tag & context processor passing on
+  all of the ``tox`` matrix.
