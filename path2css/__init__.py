@@ -76,8 +76,6 @@ class Output(UserList):
 
 
 def context_processor(request):
-    def lazy_output():
-        return Output(request_path_to_css_names(request.path, midpoint='-'))
     return {
-        "PATH2CSS": lazy(lazy_output, Output),
+        "PATH2CSS": Output(request_path_to_css_names(request.path, midpoint='-')),
     }
