@@ -2,6 +2,8 @@
 
 clean-build:
 	rm -fr build/
+	rm -fr htmlcov/
+	rm -fr .tox/
 	rm -fr dist/
 	rm -fr .eggs/
 	find . -name '*.egg-info' -exec rm -fr {} +
@@ -18,6 +20,7 @@ test: clean-pyc
 	python -B -R -tt -W ignore setup.py test
 
 dist: test clean-build clean-pyc
+	pip install wheel
 	python setup.py sdist bdist_wheel
 
 check: dist
