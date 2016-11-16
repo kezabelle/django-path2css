@@ -35,6 +35,14 @@ will all have the ``blog`` CSS class added to the body, which you could then use
 Note that blog-post-comments, being the deepest namespace reached, would also have
 the ``blog`` and ``blog-post`` classes added.
 
+Installation
+------------
+
+It the stable release is on PyPI::
+
+  pip install django-path2css==0.1.1
+
+
 The templatetag
 ---------------
 
