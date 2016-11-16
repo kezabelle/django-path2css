@@ -68,6 +68,14 @@ Supported Django versions
 The tests are run against Django 1.8 through 1.10, and Python 2.7, 3.3, 3.4 and 3.5.
 
 
+Roadmap
+-------
+
+If I ever have a need for it, a JavaScript equivalent that can consume
+window.location.path or whatever ... and potentially bridges to things like
+angular, I guess?
+
+
 The license
 -----------
 
