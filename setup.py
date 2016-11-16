@@ -38,9 +38,9 @@ def make_readme(root_path):
                 yield f.read()
 
 LICENSE = "BSD License"
-URL = ""
+URL = "https://github.com/kezabelle/django-path2css"
 LONG_DESCRIPTION = "\r\n\r\n----\r\n\r\n".join(make_readme(HERE))
-SHORT_DESCRIPTION = ""
+SHORT_DESCRIPTION = "Convert a request.path ('/a/b/c/d/') into CSS class names"
 KEYWORDS = (
     "django",
     "path2css",
