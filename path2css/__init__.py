@@ -74,6 +74,9 @@ class Output(UserList):
         return mark_safe(super(Output, self).__getitem__(item))
 
 
+class LinkOutput(Output):
+    pass
+
 
 def context_processor(request):
     return {
