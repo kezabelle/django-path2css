@@ -51,13 +51,17 @@ request_path_to_css_names = partial(generate_css_names_from_string,
 
 @python_2_unicode_compatible
 class Output(UserList):
+    string_template = "{}"
+    string_separator = " "
+
     def __str__(self):
         """
         Used when doing something like:
         {% path2css ... as OUTVAR %}
         {{ OUTVAR }}
         """
-        return mark_safe(" ".join(force_text(x) for x in self.data))
+        parts = (self.string_template.format(force_text(x)) for x in self.data)
+        return mark_safe(self.string_separator.join(parts))
 
     def __html__(self):
         """
@@ -75,8 +79,8 @@ class Output(UserList):
 
 
 class LinkOutput(Output):
-    pass
-
+    string_template = '<link href="{}" rel="stylesheet" type="text/css" />'
+    string_separator = "\n"
 
 def context_processor(request):
     return {
