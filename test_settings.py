@@ -72,6 +72,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'test_media')
 
 USE_TZ = True
 
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'path2css', 'tests',),
-)
+STATICFILES_TEST_DIR = os.path.join(BASE_DIR, 'path2css', 'tests',)
+STATICFILES_DIRS = (STATICFILES_TEST_DIR,)

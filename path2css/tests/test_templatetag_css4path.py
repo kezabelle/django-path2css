@@ -1,52 +1,38 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
-
 import django
 import pytest
 from django.conf import settings
+from django.contrib.staticfiles.storage import StaticFilesStorage
+from django.core.files.base import ContentFile
 from django.template import Context, Template as T
+
 
 CTX = Context()
 
-def test_templatetag():
-    resp = T('{% load path2css %}{% css4path "/test/path/" %}').render(CTX).strip()
-    expected = '<link href="{}css/test-path.css" rel="stylesheet" type="text/css" />'.format(settings.STATIC_URL)
-    assert resp == expected
+TEMPLATES = (
+    ('{% load path2css %}{% css4path "/test/path/" %}', 'css/test-path.css'),
+    ('{% load path2css %}{% css4path "/test/" prefix="HELLO" %}', 'css/HELLO-test.css'),
+    ('{% load path2css %}{% css4path "/test/" prefix="HELLO_" %}', 'css/HELLO_test.css'),
+    ('{% load path2css %}{% css4path "/test/" suffix="BYE" %}', 'css/test-BYE.css'),
+    ('{% load path2css %}{% css4path "/test/" suffix="_BYE" %}', 'css/test_BYE.css'),
+)
+
+
+@pytest.mark.parametrize("template_string,filename", TEMPLATES)
+def test_templatetag(template_string, filename):
+    storage = StaticFilesStorage(location=settings.STATICFILES_TEST_DIR)
+    try:
+        storage.save(name=filename, content=ContentFile("body { background: red; }"))
+        resp = T(template_string).render(CTX).strip()
+        expected_output = '<link href="{}{}" rel="stylesheet" type="text/css" />'.format(settings.STATIC_URL, filename)
+        assert resp == expected_output
+    finally:
+        storage.delete(filename)
 
 def test_templatetag_root_does_nothing():
     resp = T('{% load path2css %}{% css4path "//" %}').render(CTX).strip()
     assert resp == ''
-
-
-def test_templatetag_with_prefix():
-    resp = T('{% load path2css %}{% css4path "/test/" prefix="HELLO" %}').render(
-        CTX,
-    ).strip()
-    expected = '<link href="{}css/HELLO-test.css" rel="stylesheet" type="text/css" />'.format(settings.STATIC_URL)
-    assert resp == expected
-
-
-def test_templatetag_with_prefix_ending_with_separator():
-    resp = T('{% load path2css %}{% css4path "/test/" prefix="HELLO_" %}').render(
-        CTX,
-    ).strip()
-    expected = '<link href="{}css/HELLO_test.css" rel="stylesheet" type="text/css" />'.format(settings.STATIC_URL)
-    assert resp == expected
-
-
-def test_templatetag_with_suffix():
-    resp = T('{% load path2css %}{% css4path "/test/" suffix="BYE" %}').render(
-        CTX,
-    ).strip()
-    expected = '<link href="{}css/test-BYE.css" rel="stylesheet" type="text/css" />'.format(settings.STATIC_URL)
-    assert resp == expected
-
-def test_templatetag_with_suffix_ending_with_separator():
-    resp = T('{% load path2css %}{% css4path "/test/" suffix="_BYE" %}').render(
-        CTX,
-    ).strip()
-    expected = '<link href="{}css/test_BYE.css" rel="stylesheet" type="text/css" />'.format(settings.STATIC_URL)
-    assert resp == expected
 
 
 @pytest.mark.xfail(condition=django.VERSION[0:2] < (1, 9),

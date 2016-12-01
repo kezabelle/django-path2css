@@ -7,40 +7,21 @@ from django.template import Context, Template as T
 
 CTX = Context()
 
-def test_templatetag():
-    resp = T('{% load path2css %}{% path2css "/test/path/" %}').render(CTX).strip()
-    assert resp == 'test test-path'
 
-def test_templatetag_root_does_nothing():
-    resp = T('{% load path2css %}{% path2css "//" %}').render(CTX).strip()
-    assert resp == ''
-
-
-def test_templatetag_with_prefix():
-    resp = T('{% load path2css %}{% path2css "/test/" prefix="HELLO" %}').render(
-        CTX,
-    ).strip()
-    assert resp == 'HELLO-test'
+TEMPLATES = (
+    ('{% load path2css %}{% path2css "/test/path/" %}', 'test test-path'),
+    ('{% load path2css %}{% path2css "//" %}', ''),
+    ('{% load path2css %}{% path2css "/test/" prefix="HELLO" %}', 'HELLO-test'),
+    ('{% load path2css %}{% path2css "/test/" prefix="HELLO_" %}', 'HELLO_test'),
+    ('{% load path2css %}{% path2css "/test/" suffix="BYE" %}', 'test-BYE'),
+    ('{% load path2css %}{% path2css "/test/" suffix="_BYE" %}', 'test_BYE'),
+)
 
 
-def test_templatetag_with_prefix_ending_with_separator():
-    resp = T('{% load path2css %}{% path2css "/test/" prefix="HELLO_" %}').render(
-        CTX,
-    ).strip()
-    assert resp == 'HELLO_test'
-
-
-def test_templatetag_with_suffix():
-    resp = T('{% load path2css %}{% path2css "/test/" suffix="BYE" %}').render(
-        CTX,
-    ).strip()
-    assert resp == 'test-BYE'
-
-def test_templatetag_with_suffix_ending_with_separator():
-    resp = T('{% load path2css %}{% path2css "/test/" suffix="_BYE" %}').render(
-        CTX,
-    ).strip()
-    assert resp == 'test_BYE'
+@pytest.mark.parametrize("template_string,expected_output", TEMPLATES)
+def test_templatetag(template_string, expected_output):
+    resp = T(template_string).render(CTX).strip()
+    assert resp == expected_output
 
 
 @pytest.mark.xfail(condition=django.VERSION[0:2] < (1, 9),
