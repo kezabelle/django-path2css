@@ -38,10 +38,16 @@ def test_templatetag_root_does_nothing():
 @pytest.mark.xfail(condition=django.VERSION[0:2] < (1, 9),
                    reason="Django 1.8 doesn't have combination simple/assignment tags")
 def test_templatetag_assignment():
-    resp = T('''{% load path2css %}{% css4path "/test/path/" as GOOSE %}
-    before ... {% for part in GOOSE %}-{{part}}-{% endfor %} ... after
-    ''').render(
-        CTX,
-    ).strip()
-    parts = [x for x in resp.split() if x]
-    assert parts == ['before', '...', '-/__static__/css/test-path.css-', '...', 'after']
+    filename = 'css/test-path.css'
+    storage = StaticFilesStorage(location=settings.STATICFILES_TEST_DIR)
+    try:
+        storage.save(name=filename, content=ContentFile("body { background: red; }"))
+        resp = T('''{% load path2css %}{% css4path "/test/path/" as GOOSE %}
+        before ... {% for part in GOOSE %}-{{part}}-{% endfor %} ... after
+        ''').render(
+            CTX,
+        ).strip()
+        parts = [x for x in resp.split() if x]
+        assert parts == ['before', '...', '-{}css/test-path.css-'.format(settings.STATIC_URL), '...', 'after']
+    finally:
+        storage.delete(filename)
