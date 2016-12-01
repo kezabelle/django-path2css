@@ -35,6 +35,23 @@ def test_templatetag_root_does_nothing():
     assert resp == ''
 
 
+def test_templatetag_multiple_parts_of_path():
+    filenames = ('css/level1.css', 'css/level1-level2.css', 'css/level1-level2-level3.css')
+    storage = StaticFilesStorage(location=settings.STATICFILES_TEST_DIR)
+    try:
+        for filename in filenames:
+            storage.save(name=filename, content=ContentFile("body { background: red; }"))
+        resp = T('{% load path2css %}{% css4path "/level1/level2/level3/" %}').render(CTX).strip()
+        assert resp.split("\n") == [
+            '<link href="{}css/level1.css" rel="stylesheet" type="text/css" />'.format(settings.STATIC_URL),
+            '<link href="{}css/level1-level2.css" rel="stylesheet" type="text/css" />'.format(settings.STATIC_URL),
+            '<link href="{}css/level1-level2-level3.css" rel="stylesheet" type="text/css" />'.format(settings.STATIC_URL)
+        ]
+    finally:
+        for filename in filenames:
+            storage.delete(filename)
+
+
 @pytest.mark.xfail(condition=django.VERSION[0:2] < (1, 9),
                    reason="Django 1.8 doesn't have combination simple/assignment tags")
 def test_templatetag_assignment():
