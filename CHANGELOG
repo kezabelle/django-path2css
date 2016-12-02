@@ -1,5 +1,11 @@
 Change history for django-path2css
 -------------------------------------------------------------
+
+?next?
+^^^^^^
+* Added support for searching staticfiles directories for CSS files matching
+  path components, see ``{% css4path %}`` for usage.
+
 0.1.1
 ^^^^^^
 * First release - tests for the template tag & context processor passing on
