@@ -16,6 +16,8 @@ TEMPLATES = (
     ('{% load path2css %}{% css4path "/test/" prefix="HELLO_" %}', 'css/HELLO_test.css'),
     ('{% load path2css %}{% css4path "/test/" suffix="BYE" %}', 'css/test-BYE.css'),
     ('{% load path2css %}{% css4path "/test/" suffix="_BYE" %}', 'css/test_BYE.css'),
+    # testing with different separators...
+    ('{% load path2css %}{% css4path "test:path" midpoint="__" split_on=":" %}', 'css/test__path.css'),
 )
 
 

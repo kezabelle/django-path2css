@@ -15,6 +15,9 @@ TEMPLATES = (
     ('{% load path2css %}{% path2css "/test/" prefix="HELLO_" %}', 'HELLO_test'),
     ('{% load path2css %}{% path2css "/test/" suffix="BYE" %}', 'test-BYE'),
     ('{% load path2css %}{% path2css "/test/" suffix="_BYE" %}', 'test_BYE'),
+    # testing with different separators...
+    ('{% load path2css %}{% path2css "this:is:a_test" split_on=":" %}', 'this this-is this-is-a_test'),
+    ('{% load path2css %}{% path2css "this$£$is$£$a_test" split_on="$£$" %}', 'this this-is this-is-a_test'),
 )
 
 

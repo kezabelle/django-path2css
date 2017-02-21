@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 from __future__ import unicode_literals
-from functools import partial
+
+import warnings
+
 from django.utils.encoding import force_text
-from django.utils.functional import lazy
 from django.utils.safestring import mark_safe
+
 try:
     from collections import UserList
 except ImportError:
@@ -44,9 +46,17 @@ def generate_css_names_from_string(item, split_on, prefix='', suffix='', midpoin
     return finalised_variations
 
 
-request_path_to_css_names = partial(generate_css_names_from_string,
-                                    split_on='/')
-
+def request_path_to_css_names(item, prefix='', suffix='', midpoint=''):
+    # TODO: remove this function.
+    warnings.warn(
+        "request_path_to_css_names() is scheduled to be removed, and should be "
+        "replaced with generate_css_names_from_string() with a valid "
+        "split_on argument",
+        PendingDeprecationWarning
+    )
+    return generate_css_names_from_string(item=item, split_on='/',
+                                          prefix=prefix, suffix=suffix,
+                                          midpoint=midpoint)
 
 
 @python_2_unicode_compatible
