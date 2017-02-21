@@ -13,10 +13,10 @@ except ImportError:
     from UserList import UserList
 from django.utils.six import python_2_unicode_compatible
 
-__version_info__ = '0.2.1'
-__version__ = '0.2.1'
-version = '0.2.1'
-VERSION = '0.2.1'
+__version_info__ = '0.2.2'
+__version__ = '0.2.2'
+version = '0.2.2'
+VERSION = '0.2.2'
 __all__ = ['get_version', 'generate_css_names_from_string',
            'request_path_to_css_names']
 
