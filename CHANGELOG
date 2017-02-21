@@ -1,6 +1,5 @@
 Change history for django-path2css
--------------------------------------------------------------
-?next?
+-------------------------------------------------------------0.2.1
 ^^^^^^
 * Exposed the ``split_on`` kwarg to the ``{% path2css %}`` and
   ``{% css4path %}`` template tags, allowing for splitting based on patterns
