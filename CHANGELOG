@@ -1,5 +1,11 @@
 Change history for django-path2css
 -------------------------------------------------------------
+?next?
+^^^^^^
+* Exposed the ``split_on`` kwarg to the ``{% path2css %}`` and
+  ``{% css4path %}`` template tags, allowing for splitting based on patterns
+   other than ``/``.
+
 0.2.0
 ^^^^^^
 * Added support for searching staticfiles directories for CSS files matching
