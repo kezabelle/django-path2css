@@ -18,6 +18,14 @@ TEMPLATES = (
     ('{% load path2css %}{% css4path "/test/" suffix="_BYE" %}', 'css/test_BYE.css'),
     # testing with different separators...
     ('{% load path2css %}{% css4path "test:path" midpoint="__" split_on=":" %}', 'css/test__path.css'),
+    # Tests with more interesting/exotic/bad request strings (see #2)
+    ('{% load path2css %}{% css4path "/test/…" %}', 'css/test.css'),
+    ('{% load path2css %}{% css4path "/test/%E2%80%A6" %}', 'css/test.css'),
+    ('{% load path2css %}{% css4path "/test/%E2%80%A6/test2.html" %}', 'css/test-test2.html.css'),
+    ('{% load path2css %}{% css4path "/test/ÅÍÎÏ˝ÓÔÒÚÆ☃" %}', 'css/test.css'),
+    ('{% load path2css %}{% css4path "/test/部落格/" %}', 'css/test.css'),
+    ('{% load path2css %}{% css4path "/test𝐥𝐚𝐳𝐲" %}', 'css/test.css'),
+    ('{% load path2css %}{% css4path "/test/><script>alert(123)</script>" %}', 'css/test.css'),
 )
 
 

@@ -18,6 +18,14 @@ TEMPLATES = (
     # testing with different separators...
     ('{% load path2css %}{% path2css "this:is:a_test" split_on=":" %}', 'this this-is this-is-a_test'),
     ('{% load path2css %}{% path2css "this$£$is$£$a_test" split_on="$£$" %}', 'this this-is this-is-a_test'),
+    # Tests with more interesting/exotic/bad request strings (see #2)
+    ('{% load path2css %}{% path2css "/test/…" %}', 'test'),
+    ('{% load path2css %}{% path2css "/test/%E2%80%A6" %}', 'test'),
+    ('{% load path2css %}{% path2css "/test/%E2%80%A6/test2.html" %}', 'test test-test2.html'),
+    ('{% load path2css %}{% path2css "/test/ÅÍÎÏ˝ÓÔÒÚÆ☃" %}', 'test'),
+    ('{% load path2css %}{% path2css "/test/部落格/" %}', 'test'),
+    ('{% load path2css %}{% path2css "/test𝐥𝐚𝐳𝐲" %}', 'test'),
+    ('{% load path2css %}{% path2css "/test/><script>alert(123)</script>" %}', 'test'),
 )
 
 

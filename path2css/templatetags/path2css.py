@@ -28,7 +28,6 @@ def css4path(path, prefix='', suffix='', midpoint='-', directory='css', split_on
         filename = os.path.join(directory, '{}.css'.format(variation))
         found = find_staticfile(path=filename)
         if found is not None:
-            # import pdb; pdb.set_trace()
             found_file = staticfiles_storage.url(filename)
             found_files.append(found_file)
     return LinkOutput(found_files)

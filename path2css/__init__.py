@@ -6,12 +6,16 @@ import warnings
 
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
+from django.utils.html import escape
+from django.utils.text import slugify
 
+import codecs
 try:
     from collections import UserList
 except ImportError:
     from UserList import UserList
 from django.utils.six import python_2_unicode_compatible
+from django.utils.six.moves.urllib import parse
 
 __version_info__ = '0.2.2'
 __version__ = '0.2.2'
@@ -25,8 +29,16 @@ def get_version():
 
 
 def generate_css_names_from_string(item, split_on, prefix='', suffix='', midpoint=''):
-    newpath = tuple(part for part in item.strip(split_on).split(split_on)
-                    if part)
+    split_path = item.strip(split_on).split(split_on)
+    # Refs #2 - If there's anything urlencoded, decode it.
+    unquoted_path = (parse.unquote(item).strip() for item in split_path)
+    # Refs #2 - Make sure we only bother with ought-to-be-safe ascii
+    # rather than full unicode planes.
+    decoded_path = (codecs.decode(part.encode(), "ascii", errors="ignore")
+                    for part in unquoted_path)
+    # Refs #2 - Don't take anything which needed escaping (ie: included < or & etc)
+    escaped_path = (item for item in decoded_path if escape(item) == item)
+    newpath = tuple(part for part in escaped_path if part)
     # If the thing is empty, just return an empty tuple
     if not newpath:
         return ()
