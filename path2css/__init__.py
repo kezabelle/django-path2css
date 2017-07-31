@@ -34,8 +34,7 @@ def generate_css_names_from_string(item, split_on, prefix='', suffix='', midpoin
     unquoted_path = (parse.unquote(item).strip() for item in split_path)
     # Refs #2 - Make sure we only bother with ought-to-be-safe ascii
     # rather than full unicode planes.
-    decoded_path = (codecs.decode(part.encode(), "ascii", errors="ignore")
-                    for part in unquoted_path)
+    decoded_path = (codecs.decode(part.encode(), "ascii", "ignore") for part in unquoted_path)
     # Refs #2 - Don't take anything which needed escaping (ie: included < or & etc)
     escaped_path = (item for item in decoded_path if escape(item) == item)
     newpath = tuple(part for part in escaped_path if part)
