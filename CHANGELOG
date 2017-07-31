@@ -1,5 +1,12 @@
 Change history for django-path2css
 -------------------------------------------------------------
+
+?next?
+^^^^^^
+* Ensured non-ascii, URLEncoded values and those which would need escaping, do
+  not get consumed for consideration by either the ``{% path2css %}`` or
+  ``{% css4path %}`` template tags.
+
 0.2.2
 ^^^^^^
 * Fix long description.
