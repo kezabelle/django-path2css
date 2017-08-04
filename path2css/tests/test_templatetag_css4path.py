@@ -26,6 +26,9 @@ TEMPLATES = (
     ('{% load path2css %}{% css4path "/test/部落格/" %}', 'css/test.css'),
     ('{% load path2css %}{% css4path "/test𝐥𝐚𝐳𝐲" %}', 'css/test.css'),
     ('{% load path2css %}{% css4path "/test/><script>alert(123)</script>" %}', 'css/test.css'),
+    ('{% load path2css %}{% css4path "/test/-->" %}', 'css/test.css'),
+    ('{% load path2css %}{% css4path \'/test/"><script>alert(123)</script>"<span></span\' %}', 'css/test.css'),
+    ('{% load path2css %}{% css4path \'/test/%22%3E%3Cscript%3Ealert%28123%29%3C%2Fscript%3E%22%3Cspan%3E%3C%2Fspan\' %}', 'css/test.css'),
 )
 
 
@@ -34,9 +37,11 @@ def test_templatetag(template_string, filename):
     storage = StaticFilesStorage(location=settings.STATICFILES_TEST_DIR)
     try:
         storage.save(name=filename, content=ContentFile("body { background: red; }"))
-        resp = T(template_string).render(CTX).strip()
+        resp = T(template_string).render(CTX).strip().split("\n")
         expected_output = '<link href="{}{}" rel="stylesheet" type="text/css" />'.format(settings.STATIC_URL, filename)
-        assert resp == expected_output
+        assert expected_output in resp
+        assert "<!--" not in resp
+        assert "-->" not in resp
     finally:
         storage.delete(filename)
 
@@ -64,17 +69,34 @@ def test_templatetag_multiple_parts_of_path():
 
 @pytest.mark.xfail(condition=django.VERSION[0:2] < (1, 9),
                    reason="Django 1.8 doesn't have combination simple/assignment tags")
-def test_templatetag_assignment():
-    filename = 'css/test-path.css'
+@pytest.mark.parametrize("request_path,filenames", (
+    ('/test/path/', ['css/test-path.css']),
+    ('/test/path/', ['css/test.css', 'css/test-path.css']),
+    ("/test/…", ['css/test.css']),
+    ("/test/%E2%80%A6", ['css/test.css']),
+    ("/test/%E2%80%A6/test2.html", ['css/test.css', 'css/test-test2.html.css']),
+    ("/test/ÅÍÎÏ˝ÓÔÒÚÆ☃", ['css/test.css']),
+    ("/test𝐥𝐚𝐳𝐲", ['css/test.css']),
+    ("/test/-->/test-other/", ['css/test.css', 'css/test-test-other.css']),
+    ("/test/><script>alert(123)</script>", ['css/test.css']),
+    ('/test/"><script>alert(123)</script>"<span></span', ['css/test.css', 'css/test-span.css']),
+    ("/test/%22%3E%3Cscript%3Ealert%28123%29%3C%2Fscript%3E%22%3Cspan%3E%3C%2Fspan", ['css/test.css']),
+))
+def test_templatetag_assignment(request_path, filenames):
     storage = StaticFilesStorage(location=settings.STATICFILES_TEST_DIR)
     try:
-        storage.save(name=filename, content=ContentFile("body { background: red; }"))
-        resp = T('''{% load path2css %}{% css4path "/test/path/" as GOOSE %}
-        before ... {% for part in GOOSE %}-{{part}}-{% endfor %} ... after
-        ''').render(
-            CTX,
-        ).strip()
-        parts = [x for x in resp.split() if x]
-        assert parts == ['before', '...', '-{}css/test-path.css-'.format(settings.STATIC_URL), '...', 'after']
+        for filename in filenames:
+            storage.save(name=filename, content=ContentFile("body { background: red; }"))
+        resp = T('''
+        {% load path2css %}
+        {% css4path path as GOOSE %}
+        {% for part, exists in GOOSE %}
+        {% if exists %}{{ part }}{% endif %}
+        {% endfor %}
+        ''').render(Context({'path': request_path})).strip()
+        parts = [x.strip() for x in resp.split("\n") if x.strip()]
+        expected_output = ["{}{}".format(settings.STATIC_URL, filename) for filename in filenames]
+        assert parts == expected_output
     finally:
-        storage.delete(filename)
+        for filename in filenames:
+            storage.delete(filename)

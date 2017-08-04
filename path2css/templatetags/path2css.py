@@ -27,7 +27,6 @@ def css4path(path, prefix='', suffix='', midpoint='-', directory='css', split_on
     for variation in variations:
         filename = os.path.join(directory, '{}.css'.format(variation))
         found = find_staticfile(path=filename)
-        if found is not None:
-            found_file = staticfiles_storage.url(filename)
-            found_files.append(found_file)
+        found_file = staticfiles_storage.url(filename)
+        found_files.append((found_file, bool(found)))
     return LinkOutput(found_files)

@@ -6,8 +6,7 @@ import warnings
 
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
-from django.utils.html import escape
-from django.utils.text import slugify
+from django.utils.html import escape, format_html
 
 import codecs
 try:
@@ -75,14 +74,18 @@ class Output(UserList):
     string_template = "{}"
     string_separator = " "
 
+    def rendered(self):
+        for x in self.data:
+            yield format_html(self.string_template, force_text(x))
+
     def __str__(self):
         """
         Used when doing something like:
         {% path2css ... as OUTVAR %}
         {{ OUTVAR }}
         """
-        parts = (self.string_template.format(force_text(x)) for x in self.data)
-        return mark_safe(self.string_separator.join(parts))
+        parts = self.rendered()
+        return self.string_separator.join(parts)
 
     def __html__(self):
         """
@@ -90,18 +93,31 @@ class Output(UserList):
         """
         return force_text(self)
 
-    def __getitem__(self, item):
-        """
-        Used when doing something like:
-        {% path2css ... as OUTVAR %}
-        {% for x in OUTVAR %}{{ x }}{% endfor %}
-        """
-        return mark_safe(super(Output, self).__getitem__(item))
+    """
+    __getitem__ is used when doing something like:
+    {% path2css ... as OUTVAR %}
+    {% for x in OUTVAR %}{{ x }}{% endfor %}
+    """
 
 
 class LinkOutput(Output):
     string_template = '<link href="{}" rel="stylesheet" type="text/css" />'
     string_separator = "\n"
+
+    def rendered(self):
+        for x, found in self.data:
+            data = format_html(self.string_template, force_text(x))
+            if found:
+                yield data
+            else:
+                yield "<!-- {} -->".format(data)
+
+    """
+    __getitem__ is used when doing something like:
+    {% path2css ... as OUTVAR %}
+    {% for x, did_file_exist in OUTVAR %}{{ x }}={{ did_file_exist }}{% endfor %}
+    """
+
 
 def context_processor(request):
     return {
