@@ -121,5 +121,5 @@ class LinkOutput(Output):
 
 def context_processor(request):
     return {
-        "PATH2CSS": Output(request_path_to_css_names(request.path, midpoint='-')),
+        "PATH2CSS": Output(generate_css_names_from_string(request.path, split_on='/',midpoint='-')),
     }
