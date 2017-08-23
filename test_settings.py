@@ -15,12 +15,6 @@ DATABASES = {
 }
 
 INSTALLED_APPS = [
-    'django.contrib.sites',
-    'django.contrib.sessions',
-    'django.contrib.contenttypes',
-    'django.contrib.staticfiles',
-    'django.contrib.auth',
-    'django.contrib.admin',
     'path2css',
 ]
 
@@ -43,7 +37,6 @@ PASSWORD_HASHERS = (
 SITE_ID = 1
 
 TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth',
     'path2css.context_processor',
 )
 TEMPLATE_LOADERS = (
@@ -62,9 +55,6 @@ TEMPLATES = [
 ]
 
 MIDDLEWARE_CLASSES = (
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
 )
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'test_collectstatic')
