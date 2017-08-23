@@ -3,9 +3,13 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import warnings
+from itertools import chain
 
+try:
+    from django.urls import Resolver404, resolve
+except ImportError:
+    from django.core.urlresolvers import Resolver404, resolve
 from django.utils.encoding import force_text
-from django.utils.safestring import mark_safe
 from django.utils.html import escape, format_html
 
 import codecs
@@ -13,7 +17,7 @@ try:
     from collections import UserList
 except ImportError:
     from UserList import UserList
-from django.utils.six import python_2_unicode_compatible
+from django.utils.six import python_2_unicode_compatible, string_types
 from django.utils.six.moves.urllib import parse
 
 __version_info__ = '0.2.2'
@@ -27,7 +31,7 @@ def get_version():
     return version  # pragma: no cover
 
 
-def generate_css_names_from_string(item, split_on, prefix='', suffix='', midpoint=''):
+def _generate_css_names_from_string(item, split_on, prefix='', suffix='', midpoint=''):
     split_path = item.strip(split_on).split(split_on)
     # Refs #2 - If there's anything urlencoded, decode it.
     unquoted_path = (parse.unquote(item).strip() for item in split_path)
@@ -54,6 +58,41 @@ def generate_css_names_from_string(item, split_on, prefix='', suffix='', midpoin
         for variation in variations
     )
     return finalised_variations
+
+
+def generate_css_names_from_string(item, split_on, prefix='', suffix='', midpoint=''):
+    seen = set()
+    complete_variations = _generate_css_names_from_string(
+        item=item, split_on=split_on, prefix=prefix, suffix=suffix,
+        midpoint=midpoint)
+    for variation in complete_variations:
+        if variation not in seen:
+            seen.add(variation)
+            yield variation
+    # Given a URL which includes, say, 2 dynamic parts like so:
+    # /section/<DYNAMIC>/comments/<DYNAMIC>/details/
+    # try and get the following variations:
+    # section section-comments section-comments-details
+    static_variations = ()
+    try:
+        matched_view = resolve(item)
+    except Resolver404:
+        pass
+    else:
+        dynamic_parts = chain(matched_view.args, matched_view.kwargs.values())
+        dynamic_strs = (x for x in dynamic_parts
+                        if isinstance(x, string_types))
+        item_copy = item
+        for to_replace in dynamic_strs:
+            item_copy = item_copy.replace(to_replace, '', 1)
+        static_variations = generate_css_names_from_string(
+            item_copy, split_on=split_on, prefix=prefix,
+            suffix=suffix, midpoint=midpoint)
+    for extra_variation in static_variations:
+        if extra_variation not in seen:
+            seen.add(extra_variation)
+            yield extra_variation
+
 
 
 def request_path_to_css_names(item, prefix='', suffix='', midpoint=''):
