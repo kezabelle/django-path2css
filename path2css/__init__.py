@@ -85,7 +85,7 @@ def generate_css_names_from_string(item, split_on, prefix='', suffix='', midpoin
         item_copy = item
         for to_replace in dynamic_strs:
             item_copy = item_copy.replace(to_replace, '', 1)
-        static_variations = generate_css_names_from_string(
+        static_variations = _generate_css_names_from_string(
             item_copy, split_on=split_on, prefix=prefix,
             suffix=suffix, midpoint=midpoint)
     for extra_variation in static_variations:
