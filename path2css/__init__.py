@@ -20,10 +20,10 @@ except ImportError:
 from django.utils.six import python_2_unicode_compatible, string_types
 from django.utils.six.moves.urllib import parse
 
-__version_info__ = '0.2.2'
-__version__ = '0.2.2'
-version = '0.2.2'
-VERSION = '0.2.2'
+__version_info__ = '0.2.3'
+__version__ = '0.2.3'
+version = '0.2.3'
+VERSION = '0.2.3'
 __all__ = ['get_version', 'generate_css_names_from_string',
            'request_path_to_css_names']
 

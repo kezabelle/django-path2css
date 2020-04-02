@@ -48,7 +48,7 @@ KEYWORDS = (
 
 setup(
     name="django-path2css",
-    version="0.2.2",
+    version="0.2.3",
     author="Keryn Knight",
     author_email="django-path2css@kerynknight.com",
     maintainer="Keryn Knight",

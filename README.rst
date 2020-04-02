@@ -2,9 +2,9 @@ django-path2css
 ===============
 
 :author: Keryn Knight
-:version: 0.2.2
+:version: 0.2.3
 
-.. |travis_stable| image:: https://travis-ci.org/kezabelle/django-path2css.svg?branch=0.2.2
+.. |travis_stable| image:: https://travis-ci.org/kezabelle/django-path2css.svg?branch=0.2.3
   :target: https://travis-ci.org/kezabelle/django-path2css
 
 .. |travis_master| image:: https://travis-ci.org/kezabelle/django-path2css.svg?branch=master
@@ -13,7 +13,7 @@ django-path2css
 ==============  ======
 Release         Status
 ==============  ======
-stable (0.2.2)  |travis_stable|
+stable (0.2.3)  |travis_stable|
 master          |travis_master|
 ==============  ======
 
@@ -75,7 +75,7 @@ Installation
 
 It the stable release is on PyPI::
 
-  pip install django-path2css==0.2.2
+  pip install django-path2css==0.2.3
 
 
 The templatetags
