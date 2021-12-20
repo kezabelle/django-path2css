@@ -2,6 +2,8 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import codecs
+import sys
 import warnings
 from itertools import chain
 
@@ -9,16 +11,25 @@ try:
     from django.urls import Resolver404, resolve
 except ImportError:
     from django.core.urlresolvers import Resolver404, resolve
-from django.utils.encoding import force_text
+try:
+    from django.utils.encoding import force_str as force_text
+except ImportError:
+    from django.utils.encoding import force_text
 from django.utils.html import escape, format_html
 
-import codecs
 try:
     from collections import UserList
+    from urllib import parse
+    string_types = str,
+    PY3 = True
+    PY2 = False
 except ImportError:
     from UserList import UserList
-from django.utils.six import python_2_unicode_compatible, string_types
-from django.utils.six.moves.urllib import parse
+    import urlparse as parse
+    string_types = basestring,
+    PY3 = False
+    PY2 = True
+
 
 __version_info__ = '0.2.3'
 __version__ = '0.2.3'
@@ -108,7 +119,6 @@ def request_path_to_css_names(item, prefix='', suffix='', midpoint=''):
                                           midpoint=midpoint)
 
 
-@python_2_unicode_compatible
 class Output(UserList):
     string_template = "{}"
     string_separator = " "
@@ -124,7 +134,21 @@ class Output(UserList):
         {{ OUTVAR }}
         """
         parts = self.rendered()
-        return self.string_separator.join(parts)
+        val = self.string_separator.join(parts)
+        if PY2:
+            return val.encode('utf-8')
+        return val
+
+    if PY2:
+        def __unicode__(self):
+            """
+            Python2 only.
+            Used when doing something like:
+            {% path2css ... as OUTVAR %}
+            {{ OUTVAR }}
+            """
+            parts = self.rendered()
+            return self.string_separator.join(parts)
 
     def __html__(self):
         """
