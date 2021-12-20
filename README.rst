@@ -4,20 +4,6 @@ django-path2css
 :author: Keryn Knight
 :version: 0.2.3
 
-.. |travis_stable| image:: https://travis-ci.org/kezabelle/django-path2css.svg?branch=0.2.3
-  :target: https://travis-ci.org/kezabelle/django-path2css
-
-.. |travis_master| image:: https://travis-ci.org/kezabelle/django-path2css.svg?branch=master
-  :target: https://travis-ci.org/kezabelle/django-path2css
-
-==============  ======
-Release         Status
-==============  ======
-stable (0.2.3)  |travis_stable|
-master          |travis_master|
-==============  ======
-
-
 What it does
 ------------
 
@@ -92,6 +78,16 @@ without clobbering your existing styles::
 The ``{% css4path %}`` takes the same ``prefix``/``suffix`` parameters, and
 also takes an optional ``directory``, whose default value is ``css``
 
+Using ResolverMatch
+-------------------
+
+As `{% path2css %} consumes any string, you can use it to tag areas/sections based on
+non-path elements, like so::
+
+  {% path2css request.resolver_match.namespace ... split_on=":" %}
+  {% path2css request.resolver_match.view_name ... split_on=":" %}
+  {% path2css request.resolver_match.url_name  ... split_on="_" %}
+
 The context processor
 ---------------------
 
@@ -103,7 +99,7 @@ prefix/suffix arguents.
 Supported Django versions
 -------------------------
 
-The tests are run against Django 1.8 through 1.10, and Python 2.7, 3.3, 3.4 and 3.5.
+Most of them, probably?
 
 
 Roadmap
@@ -117,6 +113,6 @@ angular, I guess?
 The license
 -----------
 
-It's the `FreeBSD`_. There's should be a ``LICENSE`` file in the root of the repository, and in any archives.
+It's `FreeBSD`_. There's should be a ``LICENSE`` file in the root of the repository, and in any archives.
 
 .. _FreeBSD: http://en.wikipedia.org/wiki/BSD_licenses#2-clause_license_.28.22Simplified_BSD_License.22_or_.22FreeBSD_License.22.29
